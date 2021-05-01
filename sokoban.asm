@@ -180,6 +180,7 @@ move_right:
 		inc xpos
 		lda xpos
 		sta $0203
+		; check box 1
 		lda $0207
 		sta box_x
 		lda $0204
@@ -189,27 +190,94 @@ move_right:
 		sta $0207
 		lda box_y
 		sta $0204
+		; check box 2
+		lda $020B
+		sta box_x
+		lda $0208
+		sta box_y
+		jsr hit_box_right
+		lda box_x
+		sta $020B
+		lda box_y
+		sta $0208
 		rts
 
 move_left:
 		dec xpos
 		lda xpos
 		sta $0203
+		; check box 1
+		lda $0207
+		sta box_x
+		lda $0204
+		sta box_y
 		jsr hit_box_left
+		lda box_x
+		sta $0207
+		lda box_y
+		sta $0204
+		; check box 2
+		lda $020B
+		sta box_x
+		lda $0208
+		sta box_y
+		jsr hit_box_left
+		lda box_x
+		sta $020B
+		lda box_y
+		sta $0208
 		rts
 
 move_down:
 		inc ypos
 		lda ypos
 		sta $0200
+		; check box 1
+		lda $0207
+		sta box_x
+		lda $0204
+		sta box_y
 		jsr hit_box_down
+		lda box_x
+		sta $0207
+		lda box_y
+		sta $0204
+		; check box 2
+		lda $020B
+		sta box_x
+		lda $0208
+		sta box_y
+		jsr hit_box_down
+		lda box_x
+		sta $020B
+		lda box_y
+		sta $0208
 		rts
 
 move_up:
 		dec ypos
 		lda ypos
 		sta $0200
+		; check box 1
+		lda $0207
+		sta box_x
+		lda $0204
+		sta box_y
 		jsr hit_box_up
+		lda box_x
+		sta $0207
+		lda box_y
+		sta $0204
+		; check box 2
+		lda $020B
+		sta box_x
+		lda $0208
+		sta box_y
+		jsr hit_box_up
+		lda box_x
+		sta $020B
+		lda box_y
+		sta $0208
 		rts
 
 hit_box_right:
@@ -322,6 +390,8 @@ hit_box_up:
 	:
 		rts
 
+
+
 ; -------------- Interrupts --------------------------
 
 NMI:
@@ -344,7 +414,7 @@ palette_data:
 	.byte $22, $0F, $36, $17 ; palette 3 (7)
 
 sprite_data:
-	.byte $20, $01, $00, $20
+	.byte $20, $04, $00, $20
 	.byte $50, $02, $00, $50
 	.byte $60, $03, $00, $60
 
