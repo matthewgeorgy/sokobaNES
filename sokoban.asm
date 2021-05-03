@@ -347,32 +347,32 @@ store_box_2:
 		rts
 
 check_x1:
-	lda box_x
-	clc
-	adc #$08
-	cmp xpos
-	rts
+		lda box_x
+		clc
+		adc #$08
+		cmp xpos
+		rts
 
 check_x2:
-	lda xpos
-	clc
-	adc #$08
-	cmp box_x
-	rts
+		lda xpos
+		clc
+		adc #$08
+		cmp box_x
+		rts
 
 check_y1:
-	lda box_y
-	clc
-	adc #$08
-	cmp ypos
-	rts
+		lda box_y
+		clc
+		adc #$08
+		cmp ypos
+		rts
 
 check_y2:
-	lda ypos
-	clc
-	adc #$08
-	cmp box_y
-	rts
+		lda ypos
+		clc
+		adc #$08
+		cmp box_y
+		rts
 
 ; -------------- Interrupts --------------------------
 
