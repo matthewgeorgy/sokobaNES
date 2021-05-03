@@ -101,7 +101,7 @@ box_y = $04
 		lda sprite_data, x
 		sta $0200, x
 		inx
-		cpx #$12
+		cpx #$10
 		bne load_sprites
 	
 		; Enable interrupts
@@ -180,104 +180,56 @@ move_right:
 		inc xpos
 		lda xpos
 		sta $0203
-		; check box 1
-		lda $0207
-		sta box_x
-		lda $0204
-		sta box_y
+		; box 1
+		jsr load_box_1
 		jsr hit_box_right
-		lda box_x
-		sta $0207
-		lda box_y
-		sta $0204
-		; check box 2
-		lda $020B
-		sta box_x
-		lda $0208
-		sta box_y
+		jsr store_box_1
+		; box 2
+		jsr load_box_2
 		jsr hit_box_right
-		lda box_x
-		sta $020B
-		lda box_y
-		sta $0208
+		jsr store_box_2
 		rts
 
 move_left:
 		dec xpos
 		lda xpos
 		sta $0203
-		; check box 1
-		lda $0207
-		sta box_x
-		lda $0204
-		sta box_y
+		; box 1
+		jsr load_box_1
 		jsr hit_box_left
-		lda box_x
-		sta $0207
-		lda box_y
-		sta $0204
-		; check box 2
-		lda $020B
-		sta box_x
-		lda $0208
-		sta box_y
+		jsr store_box_1
+		; box 2
+		jsr load_box_2
 		jsr hit_box_left
-		lda box_x
-		sta $020B
-		lda box_y
-		sta $0208
+		jsr store_box_2
 		rts
 
 move_down:
 		inc ypos
 		lda ypos
 		sta $0200
-		; check box 1
-		lda $0207
-		sta box_x
-		lda $0204
-		sta box_y
+		; box 1
+		jsr load_box_1
 		jsr hit_box_down
-		lda box_x
-		sta $0207
-		lda box_y
-		sta $0204
-		; check box 2
-		lda $020B
-		sta box_x
-		lda $0208
-		sta box_y
+		jsr store_box_1
+		; box 2
+		jsr load_box_2
 		jsr hit_box_down
-		lda box_x
-		sta $020B
-		lda box_y
-		sta $0208
+		jsr store_box_2
 		rts
 
 move_up:
 		dec ypos
 		lda ypos
 		sta $0200
-		; check box 1
-		lda $0207
-		sta box_x
-		lda $0204
-		sta box_y
+		; box 1
+		jsr load_box_1
 		jsr hit_box_up
-		lda box_x
-		sta $0207
-		lda box_y
-		sta $0204
-		; check box 2
-		lda $020B
-		sta box_x
-		lda $0208
-		sta box_y
+		jsr store_box_1
+		; box 2
+		jsr load_box_2
 		jsr hit_box_up
-		lda box_x
-		sta $020B
-		lda box_y
-		sta $0208
+		jsr store_box_2
 		rts
 
 hit_box_right:
@@ -289,21 +241,15 @@ hit_box_right:
 		cmp box_x
 		bne :+
 		; check y1 for collision		
-		lda box_y
-		clc
-		adc #$08
-		cmp ypos
+		jsr check_y1
 		bcc :+
 		; check y2 for collision		
-		lda ypos
-		clc
-		adc #$08
-		cmp box_y
+		jsr check_y2
 		bcc :+
 		; move box to the right
 		lda box_x
 		clc
-		adc #$02
+		adc #$01
 		sta box_x
 	:
 		rts
@@ -317,21 +263,15 @@ hit_box_left:
 		cmp box_x
 		bne :+
 		; check y1 for collision		
-		lda box_y
-		clc
-		adc #$08
-		cmp ypos
+		jsr check_y1
 		bcc :+
 		; check y2 for collision		
-		lda ypos
-		clc
-		adc #$08
-		cmp box_y
+		jsr check_y2
 		bcc :+
 		; move box to the left
 		lda box_x
 		clc
-		sbc #$02
+		sbc #$01
 		sta box_x
 	:
 		rts
@@ -344,21 +284,15 @@ hit_box_down:
 		cmp box_y
 		bne :+
 		; check x1
-		lda box_x
-		clc
-		adc #$08
-		cmp xpos
+		jsr check_x1
 		bcc :+
 		; check x2
-		lda xpos
-		clc
-		adc #$08
-		cmp box_x
+		jsr check_x2
 		bcc :+
 		; move down
 		lda box_y
 		clc
-		adc #$02
+		adc #$01
 		sta box_y
 	:
 		rts
@@ -371,26 +305,74 @@ hit_box_up:
 		cmp ypos
 		bne :+
 		; check x1
-		lda box_x
-		clc
-		adc #$08
-		cmp xpos
+		jsr check_x1
 		bcc :+
 		; check x2
-		lda xpos
-		clc
-		adc #$08
-		cmp box_x
+		jsr check_x2
 		bcc :+
 		; move up
 		lda box_y
 		clc
-		sbc #$02
+		sbc #$01
 		sta box_y
 	:
 		rts
 
+load_box_1:
+		lda $0207
+		sta box_x
+		lda $0204
+		sta box_y
+		rts
 
+store_box_1:
+		lda box_x
+		sta $0207
+		lda box_y
+		sta $0204
+		rts
+
+load_box_2:
+		lda $020B
+		sta box_x
+		lda $0208
+		sta box_y
+		rts
+
+store_box_2:
+		lda box_x
+		sta $020B
+		lda box_y
+		sta $0208
+		rts
+
+check_x1:
+	lda box_x
+	clc
+	adc #$08
+	cmp xpos
+	rts
+
+check_x2:
+	lda xpos
+	clc
+	adc #$08
+	cmp box_x
+	rts
+
+check_y1:
+	lda box_y
+	clc
+	adc #$08
+	cmp ypos
+	rts
+
+check_y2:
+	lda ypos
+	clc
+	adc #$08
+	cmp box_y
+	rts
 
 ; -------------- Interrupts --------------------------
 
@@ -414,9 +396,10 @@ palette_data:
 	.byte $22, $0F, $36, $17 ; palette 3 (7)
 
 sprite_data:
-	.byte $20, $04, $00, $20
+	.byte $00, $04, $00, $00 ; player
 	.byte $50, $02, $00, $50
 	.byte $60, $03, $00, $60
+	.byte $80, $0A, $00, $80
 
 .segment "VECTORS"
 	.word NMI
