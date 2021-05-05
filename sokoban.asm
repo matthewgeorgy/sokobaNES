@@ -119,34 +119,32 @@ box_y = $04
 
 ; ------------------- Subroutines ----------------------------
 
-update_sprites:
+.proc update_sprites
 		lda #$00
 		sta OAMADDR
 		lda #$02
 		sta OAMDMA
 		rts
+.endproc ; update_sprites
 
-config_controller:
+.proc read_controller
+	; config + read data
+	config_controller:
 		; latch state
 		lda #$01
 		sta CONTR1
 		ldx #$00
 		stx CONTR1
-		rts
 
-read_buttons:
+	read_buttons:
 		lda $4016
 		lsr a
 		ror buttons			; RLDUsSBA
 		inx
 		cpx #$08
 		bne read_buttons
-		rts
 
-read_controller:
-		jsr config_controller
-		jsr read_buttons
-
+	; check each button
 	check_right:
 		lda #$80
 		and buttons
@@ -171,14 +169,15 @@ read_controller:
 	check_up:
 		lda #$10
 		and buttons
-		beq end_controller
+		beq done
 		ldx #$00
 		jsr move_up
 
-	end_controller:
+	done:
 		rts	
+.endproc ; read_controller
 
-move_right:
+.proc move_right
 		inc xpos
 		lda xpos
 		sta $0203
@@ -190,9 +189,11 @@ move_right:
 		jsr load_box_2
 		jsr hit_box_right
 		jsr store_box_2
-		rts
 
-move_left:
+		rts
+.endproc ; move_right
+
+.proc move_left
 		dec xpos
 		lda xpos
 		sta $0203
@@ -204,9 +205,11 @@ move_left:
 		jsr load_box_2
 		jsr hit_box_left
 		jsr store_box_2
-		rts
 
-move_down:
+		rts
+.endproc ; move_left
+
+.proc move_down
 		inc ypos
 		lda ypos
 		sta $0200
@@ -218,9 +221,11 @@ move_down:
 		jsr load_box_2
 		jsr hit_box_down
 		jsr store_box_2
-		rts
 
-move_up:
+		rts
+.endproc ; move_down
+
+.proc move_up
 		dec ypos
 		lda ypos
 		sta $0200
@@ -232,9 +237,11 @@ move_up:
 		jsr load_box_2
 		jsr hit_box_up
 		jsr store_box_2
-		rts
 
-hit_box_right:
+		rts
+.endproc ; move_down
+
+.proc hit_box_right
 		; adjust for coord difference
 		lda xpos
 		clc
@@ -255,8 +262,9 @@ hit_box_right:
 		sta box_x
 	:
 		rts
+.endproc ; hit_box_right
 
-hit_box_left:
+.proc hit_box_left
 		; adjust for coord difference
 		lda xpos
 		clc
@@ -277,8 +285,9 @@ hit_box_left:
 		sta box_x
 	:
 		rts
+.endproc ; hit_box_left
 
-hit_box_down:
+.proc hit_box_down
 		lda ypos
 		clc
 		adc #$08
@@ -298,8 +307,9 @@ hit_box_down:
 		sta box_y
 	:
 		rts
+.endproc ; hit_box_down
 
-hit_box_up:
+.proc hit_box_up
 		lda box_y
 		clc
 		adc #$08
@@ -319,70 +329,86 @@ hit_box_up:
 		sta box_y
 	:
 		rts
+.endproc ; hot_bix_up
 
-load_box_1:
+.proc load_box_1
 		lda $0207
 		sta box_x
 		lda $0204
 		sta box_y
-		rts
 
-store_box_1:
+		rts
+.endproc ; load_box_1
+
+.proc store_box_1
 		lda box_x
 		sta $0207
 		lda box_y
 		sta $0204
-		rts
 
-load_box_2:
+		rts
+.endproc ; store_box_1
+
+.proc load_box_2
 		lda $020B
 		sta box_x
 		lda $0208
 		sta box_y
-		rts
 
-store_box_2:
+		rts
+.endproc ; load_box_1
+
+.proc store_box_2
 		lda box_x
 		sta $020B
 		lda box_y
 		sta $0208
-		rts
 
-check_x1:
+		rts
+.endproc ; store_box_2
+
+.proc check_x1
 		lda box_x
 		clc
 		adc #$08
 		cmp xpos
-		rts
 
-check_x2:
+		rts
+.endproc ; check_x1
+
+.proc check_x2
 		lda xpos
 		clc
 		adc #$08
 		cmp box_x
-		rts
 
-check_y1:
+		rts
+.endproc ; check_x2
+
+.proc check_y1
 		lda box_y
 		clc
 		adc #$08
 		cmp ypos
-		rts
 
-check_y2:
+		rts
+.endproc ; check_y1
+
+.proc check_y2
 		lda ypos
 		clc
 		adc #$08
 		cmp box_y
+
 		rts
+.endproc ; check_y2
 
 ; -------------- Interrupts --------------------------
 
 .proc nmi_handler
-NMI:
-	jsr update_sprites
-	jsr read_controller
-	rti
+		jsr update_sprites
+		jsr read_controller
+		rti
 .endproc
 
 .proc irq_handler
