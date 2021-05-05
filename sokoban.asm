@@ -466,18 +466,19 @@ palette_data:
 	.byte $22, $27, $17, $0F ; palette 3
 	; sprite palette data
 	.byte $22, $16, $27, $18 ; palette 0 (4)
-	.byte $22, $1A, $30, $27 ; palette 1 (5)
+	.byte $22, $17, $07, $0F ; palette 1 (5)
 	.byte $22, $16, $30, $27 ; palette 2 (6)
 	.byte $22, $0F, $36, $17 ; palette 3 (7)
 
 sprite_data:
 	.byte $00, $04, $00, $00 ; player
-	.byte $50, $02, $00, $50
-	.byte $60, $03, $00, $60
-	.byte $80, $0A, $00, $80
+	.byte $50, $0A, $01, $50
+	.byte $60, $0A, $01, $60
+	.byte $80, $0A, $01, $80
 
 world_data:
 	.incbin "world.nam"
+
 
 .segment "VECTORS"
 	.addr nmi_handler, reset_handler, irq_handler
