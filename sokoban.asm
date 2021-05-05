@@ -34,7 +34,7 @@ box_y = $04
 
 
 .segment "STARTUP"
-	RESET:
+.proc reset_handler
 		sei ; Disables all interrupts
 		cld ; disable decimal mode
 
@@ -78,9 +78,10 @@ box_y = $04
 		lda #$02
 		sta OAMDMA
 		nop
-
+.endproc ; reset_handler
 
 .segment "CODE"
+.proc main
 		; init PPU addr
 		lda #$3F
 		sta PPUADDR
@@ -114,6 +115,7 @@ box_y = $04
 
 	loop:
 		jmp loop
+.endproc ; main
 
 ; ------------------- Subroutines ----------------------------
 
@@ -376,10 +378,16 @@ check_y2:
 
 ; -------------- Interrupts --------------------------
 
+.proc nmi_handler
 NMI:
 	jsr update_sprites
 	jsr read_controller
 	rti
+.endproc
+
+.proc irq_handler
+		rti
+.endproc
 
 ; ------------- Data ----------------------------
 
@@ -402,9 +410,7 @@ sprite_data:
 	.byte $80, $0A, $00, $80
 
 .segment "VECTORS"
-	.word NMI
-	.word RESET
-
+	.addr nmi_handler, reset_handler, irq_handler
 
 .segment  "CHARS"
 	.incbin "sokoban.chr"
