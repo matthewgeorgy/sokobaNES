@@ -96,6 +96,46 @@ box_y = $04
 		cpx #$20
 		bne load_palettes
 
+		; initialize 'world' variable to point to world data
+		lda #<world_data ; low byte
+		sta world
+		lda #>world_data ; high byte
+		sta world + 1
+
+		; setup address in PPU for nametable data
+		bit PPUSTATUS ; reset PPU latch
+		lda #$20
+		sta PPUADDR
+		lda #$00
+		sta PPUADDR
+
+		ldx #$00
+		ldy #$00
+	load_world:
+		lda (world), y
+		sta PPUDATA
+		iny
+		cpx #$03
+		bne :+
+		cpy #$C0
+		beq done_loading_world
+	:
+		cpy #$00
+		bne load_world
+		inx
+		inc world + 1
+		jmp load_world
+
+	done_loading_world:
+	
+		ldx #$00
+	set_attributes:
+		lda #$55
+		sta PPUDATA
+		inx
+		cpx #$40
+		bne set_attributes
+
 		ldx #$00
 		ldy #$00
 	load_sprites:
@@ -124,6 +164,7 @@ box_y = $04
 		sta OAMADDR
 		lda #$02
 		sta OAMDMA
+
 		rts
 .endproc ; update_sprites
 
@@ -435,8 +476,12 @@ sprite_data:
 	.byte $60, $03, $00, $60
 	.byte $80, $0A, $00, $80
 
+world_data:
+	.incbin "world.nam"
+
 .segment "VECTORS"
 	.addr nmi_handler, reset_handler, irq_handler
+
 
 .segment  "CHARS"
 	.incbin "sokoban.chr"
