@@ -4,6 +4,7 @@ ypos = $01
 buttons = $02
 box_x = $03
 box_y = $04
+temp = $05
 
 ; We need a way to check collisions for several boxes at any given time. To do
 ; this we will use 'box_{x|y}' as a temp location for dealing with box
@@ -270,6 +271,12 @@ box_y = $04
 		dec ypos
 		lda ypos
 		sta $0200
+		; wall collision detection
+		ldx xpos
+		tay
+		jsr check_collide
+		bne :+
+		; box hit check
 		; box 1
 		jsr load_box_1
 		jsr hit_box_up
@@ -278,9 +285,46 @@ box_y = $04
 		jsr load_box_2
 		jsr hit_box_up
 		jsr store_box_2
-
+		jmp done
+	:
+		inc ypos
+		lda ypos
+		sta $0200
+	done:
 		rts
 .endproc ; move_down
+
+.proc check_collide
+	txa		; x / 64
+	lsr
+	lsr
+	lsr
+	lsr
+	lsr
+	lsr
+	sta temp
+	tya		; y/8
+	lsr
+	lsr
+	lsr
+	asl		; * 4
+	asl
+	clc
+	adc temp
+	tay		; byte index
+
+	txa		; x / 8
+	lsr
+	lsr
+	lsr
+	and #%0111
+	tax ; bitmask index
+
+	lda collision_map, y
+	and bit_mask, x		; adjusts 0 flag depending on whether we collided
+						; beq = not collide, bne = collide
+	rts
+.endproc ; check_collide
 
 .proc hit_box_right
 		; adjust for coord difference
@@ -471,13 +515,57 @@ palette_data:
 	.byte $22, $0F, $36, $17 ; palette 3 (7)
 
 sprite_data:
-	.byte $00, $04, $00, $00 ; player
+	.byte $00, $04, $02, $00 ; player
 	.byte $50, $0A, $01, $50
 	.byte $60, $0A, $01, $60
 	.byte $80, $0A, $01, $80
 
 world_data:
 	.incbin "world.nam"
+
+collision_map:
+	.byte %00000000, %00000000, %00000000, %00000000
+	.byte %00000000, %00000000, %00000000, %00000000
+	.byte %00000000, %00000000, %00000000, %00000000
+	.byte %00000000, %00000000, %00000000, %00000000
+	.byte %00000000, %00000000, %00000000, %00000000
+	.byte %00000000, %00000000, %00000000, %00000000
+	.byte %00000000, %00000000, %00000000, %00000000
+	.byte %00000000, %00000000, %00000000, %00000000
+	.byte %00000000, %01111111, %11111000, %00000000
+	.byte %00000000, %00000000, %00000000, %00000000
+
+	.byte %00000000, %00000000, %00000000, %00000000
+	.byte %00000000, %00000000, %00000000, %00000000
+	.byte %00000000, %00000000, %00000000, %00000000
+	.byte %00000000, %00000000, %00000000, %00000000
+	.byte %00000000, %00000000, %00000000, %00000000
+	.byte %00000000, %00000000, %00000000, %00000000
+	.byte %00000000, %00000000, %00000000, %00000000
+	.byte %00000000, %00000000, %00000000, %00000000
+	.byte %00000000, %00000000, %00000000, %00000000
+	.byte %00000000, %00000000, %00000000, %00000000
+
+	.byte %00000000, %00000000, %00000000, %00000000
+	.byte %00000000, %00000000, %00000000, %00000000
+	.byte %00000000, %00000000, %00000000, %00000000
+	.byte %00000000, %00000000, %00000000, %00000000
+	.byte %00000000, %00000000, %00000000, %00000000
+	.byte %00000000, %00000000, %00000000, %00000000
+	.byte %00000000, %00000000, %00000000, %00000000
+	.byte %00000000, %00000000, %00000000, %00000000
+	.byte %00000000, %00000000, %00000000, %00000000
+	.byte %00000000, %00000000, %00000000, %00000000
+
+bit_mask:
+	.byte %10000000
+	.byte %01000000
+	.byte %00100000
+	.byte %00010000
+	.byte %00001000
+	.byte %00000100
+	.byte %00000010
+	.byte %00000001
 
 
 .segment "VECTORS"
