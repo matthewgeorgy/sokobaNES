@@ -232,6 +232,7 @@ temp = $05
 		jsr hit_box_right
 		jsr store_box_2
 
+	done:
 		rts
 .endproc ; move_right
 
@@ -248,6 +249,7 @@ temp = $05
 		jsr hit_box_left
 		jsr store_box_2
 
+	done:
 		rts
 .endproc ; move_left
 
@@ -255,15 +257,43 @@ temp = $05
 		inc ypos
 		lda ypos
 		sta $0200
+		; wall collision detection
+
+		; bottom left
+		ldx xpos
+		clc
+		adc #$0A
+		tay
+		jsr check_collide
+		bne collide
+
+		; bottom right
+		lda xpos
+		clc
+		adc #$07
+		tax
+		lda ypos
+		clc
+		adc #$0A
+		tay
+		jsr check_collide
+		bne collide
+
 		; box 1
 		jsr load_box_1
 		jsr hit_box_down
 		jsr store_box_1
+
 		; box 2
 		jsr load_box_2
 		jsr hit_box_down
 		jsr store_box_2
-
+		jmp done
+	collide:
+		dec ypos
+		lda ypos
+		sta $0200
+	done:
 		rts
 .endproc ; move_down
 
@@ -272,58 +302,76 @@ temp = $05
 		lda ypos
 		sta $0200
 		; wall collision detection
+
+		; top left
 		ldx xpos
+		clc
+		adc #$03
 		tay
 		jsr check_collide
-		bne :+
-		; box hit check
+		bne collide
+
+		; top right
+		lda xpos
+		clc
+		adc #$07
+		tax
+		lda ypos
+		clc
+		adc #$03
+		tay
+		jsr check_collide
+		bne collide
+		
 		; box 1
 		jsr load_box_1
 		jsr hit_box_up
 		jsr store_box_1
+
 		; box 2
 		jsr load_box_2
 		jsr hit_box_up
 		jsr store_box_2
 		jmp done
-	:
+	collide:
 		inc ypos
 		lda ypos
 		sta $0200
+
 	done:
 		rts
 .endproc ; move_down
 
 .proc check_collide
-	txa		; x / 64
-	lsr
-	lsr
-	lsr
-	lsr
-	lsr
-	lsr
-	sta temp
-	tya		; y/8
-	lsr
-	lsr
-	lsr
-	asl		; * 4
-	asl
-	clc
-	adc temp
-	tay		; byte index
+		txa		; x / 64
+		lsr
+		lsr
+		lsr
+		lsr
+		lsr
+		lsr
+		sta temp
+		tya		; y/8
+		lsr
+		lsr
+		lsr
+		asl		; * 4
+		asl
+		clc
+		adc temp
+		tay		; byte index
 
-	txa		; x / 8
-	lsr
-	lsr
-	lsr
-	and #%0111
-	tax ; bitmask index
+		txa		; x / 8
+		lsr
+		lsr
+		lsr
+		and #%0111
+		tax ; bitmask index
 
-	lda collision_map, y
-	and bit_mask, x		; adjusts 0 flag depending on whether we collided
-						; beq = not collide, bne = collide
-	rts
+		lda collision_map, y
+		and bit_mask, x		; adjusts 0 flag depending on whether we collided
+							; beq = not collide, bne = collide
+		rts
 .endproc ; check_collide
 
 .proc hit_box_right
@@ -532,7 +580,7 @@ collision_map:
 	.byte %00000000, %00000000, %00000000, %00000000
 	.byte %00000000, %00000000, %00000000, %00000000
 	.byte %00000000, %00000000, %00000000, %00000000
-	.byte %00000000, %01111111, %11111000, %00000000
+	.byte %00000000, %01111111, %11110000, %00000000
 	.byte %00000000, %00000000, %00000000, %00000000
 
 	.byte %00000000, %00000000, %00000000, %00000000
