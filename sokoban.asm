@@ -231,6 +231,10 @@ temp = $05
 		jsr load_box_2
 		jsr hit_box_right
 		jsr store_box_2
+		; box 3
+		jsr load_box_3
+		jsr hit_box_right
+		jsr store_box_3
 
 	done:
 		rts
@@ -248,6 +252,10 @@ temp = $05
 		jsr load_box_2
 		jsr hit_box_left
 		jsr store_box_2
+		; box 3
+		jsr load_box_3
+		jsr hit_box_left
+		jsr store_box_3
 
 	done:
 		rts
@@ -288,6 +296,11 @@ temp = $05
 		jsr load_box_2
 		jsr hit_box_down
 		jsr store_box_2
+
+		; box 3
+		jsr load_box_3
+		jsr hit_box_down
+		jsr store_box_3
 		jmp done
 	collide:
 		dec ypos
@@ -332,6 +345,11 @@ temp = $05
 		jsr load_box_2
 		jsr hit_box_up
 		jsr store_box_2
+
+		; box 3
+		jsr load_box_3
+		jsr hit_box_up
+		jsr store_box_3
 		jmp done
 	collide:
 		inc ypos
@@ -500,6 +518,24 @@ temp = $05
 		rts
 .endproc ; store_box_2
 
+.proc load_box_3
+		lda $020F
+		sta box_x
+		lda $020C
+		sta box_y
+
+		rts
+.endproc ; load_box_3
+
+.proc store_box_3
+		lda box_x
+		sta $020F
+		lda box_y
+		sta $020C
+
+		rts
+.endproc ; store_box_3
+
 .proc check_x1
 		lda box_x
 		clc
@@ -564,9 +600,9 @@ palette_data:
 
 sprite_data:
 	.byte $00, $04, $02, $00 ; player
-	.byte $50, $0A, $01, $50
-	.byte $60, $0A, $01, $60
-	.byte $80, $0A, $01, $80
+	.byte $50, $0A, $01, $50 ; box 1
+	.byte $60, $0A, $01, $60 ; box 2
+	.byte $80, $0A, $01, $80 ; box 3
 
 world_data:
 	.incbin "world.nam"
