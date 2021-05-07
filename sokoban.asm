@@ -223,19 +223,49 @@ temp = $05
 		inc xpos
 		lda xpos
 		sta $0203
+		; wall collision detection	
+
+		; top right
+		clc
+		adc #$07
+		tax
+		lda ypos
+		clc
+		adc #$03
+		tay
+		jsr check_collide
+		bne collide
+
+		; bottom right
+		lda xpos
+		clc
+		adc #$07
+		tax
+		lda ypos
+		clc
+		adc #$0A
+		tay
+		jsr check_collide
+		bne collide
+
 		; box 1
 		jsr load_box_1
 		jsr hit_box_right
 		jsr store_box_1
+
 		; box 2
 		jsr load_box_2
 		jsr hit_box_right
 		jsr store_box_2
+
 		; box 3
 		jsr load_box_3
 		jsr hit_box_right
 		jsr store_box_3
-
+	collide:
+		dec xpos
+		lda xpos
+		sta $0203
 	done:
 		rts
 .endproc ; move_right
@@ -244,19 +274,45 @@ temp = $05
 		dec xpos
 		lda xpos
 		sta $0203
+		; wall collision detection
+
+		; top left
+		tax
+		lda ypos
+		clc
+		adc #$03
+		tay
+		jsr check_collide
+		bne collide
+
+		; bottom left
+
+		lda ypos
+		clc
+		adc #$0A
+		tay
+		jsr check_collide
+		bne collide
+
 		; box 1
 		jsr load_box_1
 		jsr hit_box_left
 		jsr store_box_1
+
 		; box 2
 		jsr load_box_2
 		jsr hit_box_left
 		jsr store_box_2
+
 		; box 3
 		jsr load_box_3
 		jsr hit_box_left
 		jsr store_box_3
-
+		jmp done
+	collide:
+		inc xpos
+		lda xpos
+		sta $0203
 	done:
 		rts
 .endproc ; move_left
@@ -617,21 +673,21 @@ collision_map:
 	.byte %00000000, %00000000, %00000000, %00000000
 	.byte %00000000, %00000000, %00000000, %00000000
 	.byte %00000000, %01111111, %11110000, %00000000
-	.byte %00000000, %00000000, %00000000, %00000000
+	.byte %00000000, %01000000, %00010000, %00000000
 
-	.byte %00000000, %00000000, %00000000, %00000000
-	.byte %00000000, %00000000, %00000000, %00000000
-	.byte %00000000, %00000000, %00000000, %00000000
-	.byte %00000000, %00000000, %00000000, %00000000
-	.byte %00000000, %00000000, %00000000, %00000000
-	.byte %00000000, %00000000, %00000000, %00000000
-	.byte %00000000, %00000000, %00000000, %00000000
-	.byte %00000000, %00000000, %00000000, %00000000
-	.byte %00000000, %00000000, %00000000, %00000000
-	.byte %00000000, %00000000, %00000000, %00000000
+	.byte %00000000, %01000000, %00010000, %00000000
+	.byte %00000000, %01000000, %00010000, %00000000
+	.byte %00000000, %01000000, %00010000, %00000000
+	.byte %00000000, %01000000, %00010000, %00000000
+	.byte %00000000, %01000000, %00010000, %00000000
+	.byte %00000000, %01000000, %00010000, %00000000
+	.byte %00000000, %01000000, %00010000, %00000000
+	.byte %00000000, %01000000, %00010000, %00000000
+	.byte %00000000, %01000000, %00010000, %00000000
+	.byte %00000000, %01111111, %11110000, %00000000
 
-	.byte %00000000, %00000000, %00000000, %00000000
-	.byte %00000000, %00000000, %00000000, %00000000
+	.byte %00000000, %01000000, %00000000, %00000000
+	.byte %00000000, %01000000, %00000000, %00000000
 	.byte %00000000, %00000000, %00000000, %00000000
 	.byte %00000000, %00000000, %00000000, %00000000
 	.byte %00000000, %00000000, %00000000, %00000000
