@@ -198,28 +198,24 @@ temp = $05
 		lda #$80
 		and buttons
 		beq check_left
-		ldx #$00
 		jsr move_right
 
 	check_left:
 		lda #$40
 		and buttons
 		beq check_down
-		ldx #$00
 		jsr move_left
 
 	check_down:
 		lda #$20
 		and buttons
 		beq check_up
-		ldx #$00
 		jsr move_down
 
 	check_up:
 		lda #$10
 		and buttons
 		beq done
-		ldx #$00
 		jsr move_up
 
 	done:
