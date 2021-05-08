@@ -643,11 +643,52 @@ temp = $05
 ; to update the boxes/boulders that are in the correct position, such as by
 ; giving them a different color.
 
+.proc check_box1
+		lda $0207
+		; left bound
+		cmp #$50
+		bcc :+
+		; right bound
+		cmp #$60
+		bcs :+
+
+		lda $0204
+		clc
+		adc #$03
+		; upper bound
+		cmp #$48
+		bcc :+
+
+		; lower bound
+		cmp #$50
+		bcs :+
+
+		; change color
+		lda #$00
+		sta $0206
+		jmp done
+	:
+		; set default
+		lda #$01
+		sta $0206
+
+	done:	
+		rts
+.endproc  ; check_box1
+
+.proc check_boxes
+		jsr check_box1
+
+		rts
+.endproc ; check_boxes
+
 ; -------------- Interrupts --------------------------
 
 .proc nmi_handler
-		jsr update_sprites
 		jsr read_controller
+		jsr update_sprites
+		jsr check_boxes
+
 		rti
 .endproc
 
