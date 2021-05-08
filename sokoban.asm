@@ -643,24 +643,24 @@ temp = $05
 ; to update the boxes/boulders that are in the correct position, such as by
 ; giving them a different color.
 
-.proc check_box1
+.proc check_box1 ; hole 1 (top left)
 		lda $0207
 		; left bound
-		cmp #$50
+		cmp #$50		; left bound of hole 1
 		bcc :+
 		; right bound
-		cmp #$60
+		cmp #$60		; right bound of hole 1
 		bcs :+
 
 		lda $0204
 		clc
 		adc #$03
 		; upper bound
-		cmp #$48
+		cmp #$48		; upper bound of hole 1
 		bcc :+
 
 		; lower bound
-		cmp #$50
+		cmp #$50		; lower bound of hole 1
 		bcs :+
 
 		; change color
@@ -676,8 +676,42 @@ temp = $05
 		rts
 .endproc  ; check_box1
 
+.proc check_box2 ; hole 2 (right)
+		lda $020B
+		; left bound
+		cmp #$98		; left bound of hole 2
+		bcc :+
+		; right bound
+		cmp #$A8		; right bound of hole 2
+		bcs :+
+
+		lda $0208
+		clc
+		adc #$03
+		; upper bound
+		cmp #$68		; upper bound of hole 2
+		bcc :+
+
+		; ; lower bound
+		cmp #$70		; lower bound of hole 2
+		bcs :+
+
+		; change color
+		lda #$00
+		sta $020A
+		jmp done
+	:
+		; set default
+		lda #$01
+		sta $020A
+
+	done:	
+		rts
+.endproc  ; check_box2
+
 .proc check_boxes
 		jsr check_box1
+		jsr check_box2
 
 		rts
 .endproc ; check_boxes
@@ -712,9 +746,9 @@ palette_data:
 
 sprite_data:
 	.byte $00, $04, $00, $00 ; player
-	.byte $5A, $0A, $01, $5A ; box 1
-	.byte $60, $0A, $01, $60 ; box 2
-	.byte $80, $0A, $01, $80 ; box 3
+	.byte $60, $0A, $01, $60 ; box 1
+	.byte $60, $0A, $01, $70 ; box 2
+	.byte $60, $0A, $01, $80 ; box 3
 
 world_data:
 	.incbin "world.nam"
