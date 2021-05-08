@@ -692,7 +692,7 @@ temp = $05
 		cmp #$68		; upper bound of hole 2
 		bcc :+
 
-		; ; lower bound
+		; lower bound
 		cmp #$70		; lower bound of hole 2
 		bcs :+
 
@@ -709,9 +709,43 @@ temp = $05
 		rts
 .endproc  ; check_box2
 
+.proc check_box3 ; hole 3 (right)
+		lda $020F
+		; left bound
+		cmp #$50		; left bound of hole 3
+		bcc :+
+		; right bound
+		cmp #$60		; right bound of hole 3
+		bcs :+
+
+		lda $020C
+		clc
+		adc #$03
+		; upper bound
+		cmp #$90		; upper bound of hole 3
+		bcc :+
+
+		; ; lower bound
+		cmp #$98		; lower bound of hole 3
+		bcs :+
+
+		; change color
+		lda #$00
+		sta $020E
+		jmp done
+	:
+		; set default
+		lda #$01
+		sta $020E
+
+	done:	
+		rts
+.endproc  ; check_box2
+
 .proc check_boxes
 		jsr check_box1
 		jsr check_box2
+		jsr check_box3
 
 		rts
 .endproc ; check_boxes
