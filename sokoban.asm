@@ -222,6 +222,10 @@ temp = $05
 		rts	
 .endproc ; read_controller
 
+; TODO: We can improve these move_XXX routines by getting rid of redundant loads
+; (ie. when something is already loaded) and doing transfers from A to another
+; register (and vice-versa) when applicable.
+
 .proc move_right
 		inc xpos
 		lda xpos
@@ -631,6 +635,13 @@ temp = $05
 
 		rts
 .endproc ; check_y2
+
+; TODO: the next big routine here (probably) will be a routien that goes
+; through each box/boulder and checks it's position, and then compares that
+; position to the position of the markers (aka, where the boulders need to be
+; to complete the puzzle). We'll then put this routine into our nmi_handler
+; to update the boxes/boulders that are in the correct position, such as by
+; giving them a different color.
 
 ; -------------- Interrupts --------------------------
 
