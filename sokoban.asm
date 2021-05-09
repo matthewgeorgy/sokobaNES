@@ -32,7 +32,6 @@ temp = $15
 
 .segment "ZEROPAGE" ; LSB 0 - FF
 	world: .res 2
-	door: .res 2
 
 
 .segment "STARTUP"
@@ -154,11 +153,6 @@ temp = $15
 		sta $0203
 		sta ypos
 		sta $0200
-		; door data pointer
-		lda #<collision_map
-		sta door
-		lda #>collision_map
-		sta door + 1
 	
 		; Enable interrupts
 		cli
