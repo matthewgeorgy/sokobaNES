@@ -148,9 +148,10 @@ temp = $15
     
     init_data:
         ; player data
-        lda #$4A
+        lda #$6C
         sta xpos
         sta $0203
+        lda #$88
         sta ypos
         sta $0200
     
