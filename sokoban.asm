@@ -1,10 +1,10 @@
 .include "constants.inc"
-xpos = $00
-ypos = $01
-buttons = $02
-box_x = $03
-box_y = $04
-temp = $05
+xpos = $10
+ypos = $11
+buttons = $12
+box_x = $13
+box_y = $14
+temp = $15
 
 ; We need a way to check collisions for several boxes at any given time. To do
 ; this we will use 'box_{x|y}' as a temp location for dealing with box
@@ -148,11 +148,17 @@ temp = $05
 		bne load_sprites
 	
 	init_data:
+		; player data
 		lda #$4A
 		sta xpos
 		sta $0203
 		sta ypos
 		sta $0200
+		; door data pointer
+		lda #<collision_map
+		sta door
+		lda #>collision_map
+		sta door + 1
 	
 		; Enable interrupts
 		cli
@@ -726,7 +732,7 @@ temp = $05
 		cmp #$90		; upper bound of hole 3
 		bcc :+
 
-		; ; lower bound
+		; lower bound
 		cmp #$98		; lower bound of hole 3
 		bcs :+
 
@@ -751,12 +757,21 @@ temp = $05
 		rts
 .endproc ; check_boxes
 
+.proc update_door
+		lda #$00
+		ldy #$15
+		sta collision_map, y
+		
+		rts
+.endproc ; update_door
+
 ; -------------- Interrupts --------------------------
 
 .proc nmi_handler
 		jsr read_controller
 		jsr update_sprites
 		jsr check_boxes
+		jsr update_door
 
 		rti
 .endproc
@@ -780,14 +795,14 @@ palette_data:
 	.byte $22, $0F, $36, $17 ; palette 3 (7)
 
 sprite_data:
-	.byte $00, $04, $00, $00 ; player
-	.byte $60, $0A, $01, $60 ; box 1
-	.byte $60, $0A, $01, $70 ; box 2
-	.byte $60, $0A, $01, $80 ; box 3
-	.byte $25, $03, $22, $70
-	.byte $25, $03, $22, $78
-	.byte $25, $03, $22, $80
-	.byte $25, $03, $22, $88
+	.byte $00, $04, $00, $00 ; player 	$0200
+	.byte $60, $0A, $01, $60 ; box 1	$0204
+	.byte $60, $0A, $01, $70 ; box 2	$0208
+	.byte $60, $0A, $01, $80 ; box 3	$020C
+	.byte $25, $03, $22, $70 ; door 1	$0210
+	.byte $25, $03, $22, $78 ; door 2	$0214
+	.byte $25, $03, $22, $80 ; door 3	$0218
+	.byte $25, $03, $22, $88 ; door 4 	$021C
 
 world_data:
 	.incbin "world.nam"
