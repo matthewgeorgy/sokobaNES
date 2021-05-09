@@ -684,7 +684,7 @@ temp = $15
         cmp #$98        ; left bound of hole 2
         bcc :+
         ; right bound
-        cmp #$A8        ; right bound of hole 2
+        cmp #$A4        ; right bound of hole 2
         bcs :+
 
         lda $0208
