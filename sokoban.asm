@@ -799,7 +799,7 @@ palette_data:
 	.byte $22, $0F, $36, $17 ; palette 3 (7)
 
 sprite_data:
-	.byte $00, $04, $00, $00 ; player 	$0200
+	.byte $00, $0B, $00, $00 ; player 	$0200
 	.byte $60, $0A, $01, $60 ; box 1	$0204
 	.byte $60, $0A, $01, $70 ; box 2	$0208
 	.byte $60, $0A, $01, $80 ; box 3	$020C
