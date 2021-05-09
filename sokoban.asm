@@ -32,6 +32,7 @@ temp = $05
 
 .segment "ZEROPAGE" ; LSB 0 - FF
 	world: .res 2
+	door: .res 2
 
 
 .segment "STARTUP"
@@ -143,7 +144,7 @@ temp = $05
 		lda sprite_data, x
 		sta $0200, x
 		inx
-		cpx #$10
+		cpx #$20
 		bne load_sprites
 	
 	init_data:
@@ -783,6 +784,10 @@ sprite_data:
 	.byte $60, $0A, $01, $60 ; box 1
 	.byte $60, $0A, $01, $70 ; box 2
 	.byte $60, $0A, $01, $80 ; box 3
+	.byte $25, $03, $22, $70
+	.byte $25, $03, $22, $78
+	.byte $25, $03, $22, $80
+	.byte $25, $03, $22, $88
 
 world_data:
 	.incbin "world.nam"
