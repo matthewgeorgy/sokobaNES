@@ -753,9 +753,19 @@ temp = $15
 
 .proc update_door
 		lda #$00
-		ldy #$15
-		sta collision_map, y
-		
+		cmp $0206
+		bne :+
+		cmp $020A
+		bne :+
+		cmp $020E
+		bne :+
+		lda #$02
+		sta $0212
+		sta $0216
+		sta $021A
+		sta $021E
+
+	:	
 		rts
 .endproc ; update_door
 
